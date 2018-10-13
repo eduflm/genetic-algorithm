@@ -21,6 +21,9 @@ class Individual:
   def set_probability(self,probability):
     self.probability = probability
   
+  def set_individual_in_bits(self,bits):
+    self.individual_in_bits = bits
+  
   def get_probability(self):
     return self.probability
   
@@ -29,19 +32,21 @@ class Individual:
   
   #Operator overloading to make crossover
   def __add__(self, individual2):
-    random_cut = random.randint(1,4)
-    first_part_individual = self.individual_in_bits[0:random_cut]
-    second_part_individual1 = self.individual_in_bits[random_cut:5]
-    
-    individual2_bits = individual2.get_individual_in_bits()
-    
-    first_part_individual2 = individual2_bits[0:random_cut]
-    second_part_individual2 = individual2_bits[random_cut:5]
+    if (random.random() < 0.7):
+      random_cut = random.randint(1,4)
+      first_part_individual = self.individual_in_bits[0:random_cut]
+      second_part_individual1 = self.individual_in_bits[random_cut:5]
+      
+      individual2_bits = individual2.get_individual_in_bits()
+      
+      first_part_individual2 = individual2_bits[0:random_cut]
+      second_part_individual2 = individual2_bits[random_cut:5]
 
-    first_son = first_part_individual + second_part_individual2
-    second_son = first_part_individual2 + second_part_individual1
+      first_son = first_part_individual + second_part_individual2
+      second_son = first_part_individual2 + second_part_individual1
 
-    return [first_son, second_son]
+      return [first_son, second_son] 
+    return None
   
 
 class GeneticAlgorithm:
@@ -49,7 +54,8 @@ class GeneticAlgorithm:
     self.NUMBER_OF_GENERATIONS = 20
     self.individuals = self.generate_initial_population() 
     # self.run_tournament()
-    self.run_crossover(self.individuals[0],self.individuals[1])
+    # self.run_crossover(self.individuals[0],self.individuals[1])
+    self.run_mutation()
 
   def run(self):
     self.individuals = self.generate_initial_population()
@@ -61,7 +67,7 @@ class GeneticAlgorithm:
       while first_sample == second_sample:
         second_sample = self.run_tournament
       first_son,second_son = self.run_crossover(first_sample,second_sample)
-      first_son,second_son = self.run_mutation(first_son, second_son)
+      self.run_mutation()
       #TODO: End algorithm 
 
   #Generate initial population with 30 individuals between -10 and 10
@@ -69,7 +75,6 @@ class GeneticAlgorithm:
     #List of individuals objects
     individuals_list = []
     while (len(individuals_list) < 30):
-      #Truncate the float at 3 decimal points
       randomNumber = random.randrange(-10,10)
       individuals_list.append(Individual(randomNumber))
     return individuals_list
@@ -96,9 +101,16 @@ class GeneticAlgorithm:
   def run_crossover(self, individual1, individual2):
     return individual1 + individual2
   
-  #TODO: Make mutations
-  def run_mutation(self, individual1, individual2):
-    return [individual1,individual2]
+  def run_mutation(self):
+    for individual in self.individuals:
+      individual_bits = individual.get_individual_in_bits()
+      bits_after_mutation = ""
+      for bit in individual_bits:
+        if random.random() < 0.01:
+          bits_after_mutation += "0" if bit == "1" else "1"
+        else:
+          bits_after_mutation += bit
+      individual.set_individual_in_bits(bits_after_mutation)
 
 if __name__ == "__main__":
   GeneticAlgorithm()
