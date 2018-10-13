@@ -1,4 +1,5 @@
 import random
+from texttable import Texttable
 
 class Individual:
   def __init__(self, number):
@@ -61,14 +62,11 @@ class Individual:
 
 class GeneticAlgorithm:
   def __init__(self):
-    self.NUMBER_OF_GENERATIONS = 20000
+    self.NUMBER_OF_GENERATIONS = 20
     self.run()
 
   def run(self):
     self.individuals = self.generate_initial_population()
-    for individual in self.individuals:
-      print(individual.get_decimal_number(), end="->")
-    print("end")
     current_generation = 0
     while current_generation < self.NUMBER_OF_GENERATIONS:
       self.set_probabilities()
@@ -79,10 +77,8 @@ class GeneticAlgorithm:
       self.run_crossover(first_sample,second_sample)
       self.run_mutation()
       self.normalize()
+      self.print_table(current_generation)
       current_generation += 1
-    
-    for individual in self.individuals:
-      print(individual.get_decimal_number(), end="->")
 
   #Generate initial population with 30 individuals between -10 and 10
   def generate_initial_population(self):
@@ -117,10 +113,10 @@ class GeneticAlgorithm:
       return
     else:
       first_son, second_son = response
-    individual1_index = self.individuals.index(individual1)
-    individual2_index = self.individuals.index(individual2)
-    self.individuals[individual1_index].set_individual_in_bits(first_son)
-    self.individuals[individual2_index].set_individual_in_bits(second_son)
+      individual1_index = self.individuals.index(individual1)
+      individual2_index = self.individuals.index(individual2)
+      self.individuals[individual1_index].set_individual_in_bits(first_son)
+      self.individuals[individual2_index].set_individual_in_bits(second_son)
   
   def run_mutation(self):
     for individual in self.individuals:
@@ -141,12 +137,22 @@ class GeneticAlgorithm:
       if integer > 10:
         integer = 10
         individual_bits = first_bit + "1010"
-      if first_bit == 1:
+      if first_bit == "1":
         integer *= -1
       individual.set_decimal_number(integer)
       individual.set_function_result(individual.run_function(integer))
       individual.set_individual_in_bits(individual_bits)
       individual.set_probability(0)
+  
+  def print_table(self, generation):
+    print("Current generation: "+str(generation) )
+    table_rows = []
+    table = Texttable()
+    table_rows.append(['#', 'X', 'X in binary', 'f(x)'])
+    for index, individual in enumerate(self.individuals):
+      table_rows.append([index, individual.get_decimal_number(), "0b"+individual.get_individual_in_bits(), individual.get_function_result()])
+    table.add_rows(table_rows)
+    print(table.draw())
 
 if __name__ == "__main__":
   GeneticAlgorithm()
