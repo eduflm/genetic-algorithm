@@ -54,8 +54,8 @@ class GeneticAlgorithm:
     self.NUMBER_OF_GENERATIONS = 20
     self.individuals = self.generate_initial_population() 
     # self.run_tournament()
-    # self.run_crossover(self.individuals[0],self.individuals[1])
-    self.run_mutation()
+    self.run_crossover(self.individuals[0],self.individuals[1])
+    # self.run_mutation()
 
   def run(self):
     self.individuals = self.generate_initial_population()
@@ -66,7 +66,7 @@ class GeneticAlgorithm:
       second_sample = self.run_tournament()
       while first_sample == second_sample:
         second_sample = self.run_tournament
-      first_son,second_son = self.run_crossover(first_sample,second_sample)
+      self.run_crossover(first_sample,second_sample)
       self.run_mutation()
       #TODO: End algorithm 
 
@@ -97,9 +97,16 @@ class GeneticAlgorithm:
       return sample1
     return sample2
   
-  #TODO: Verify crossover criteria
   def run_crossover(self, individual1, individual2):
-    return individual1 + individual2
+    response = individual1 + individual2
+    if response == None:
+      return
+    else:
+      first_son, second_son = response
+    individual1_index = self.individuals.index(individual1)
+    individual2_index = self.individuals.index(individual2)
+    self.individuals[individual1_index].set_individual_in_bits(first_son)
+    self.individuals[individual2_index].set_individual_in_bits(second_son)
   
   def run_mutation(self):
     for individual in self.individuals:
