@@ -62,7 +62,7 @@ class Individual:
 
 class GeneticAlgorithm:
   def __init__(self):
-    self.NUMBER_OF_GENERATIONS = 200
+    self.NUMBER_OF_GENERATIONS = 20
     self.run()
 
   def run(self):
@@ -80,6 +80,7 @@ class GeneticAlgorithm:
       self.normalize()
       self.print_table(current_generation, file)
       current_generation += 1
+    print("File table_result generated with success!")
     file.close()
 
   #Generate initial population with 30 individuals between -10 and 10
