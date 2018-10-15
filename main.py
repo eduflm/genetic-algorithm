@@ -176,6 +176,10 @@ class GeneticAlgorithm:
       table_rows.append([index, individual.get_decimal_number(), "0b"+individual.get_individual_in_bits(), individual.get_function_result()])
     table.add_rows(table_rows)
     file.write(table.draw())
+    min_individual = min(self.individuals,key=attrgetter('function_result'))
+    max_individual = max(self.individuals,key=attrgetter('function_result'))
+    file.write("\nCurrent minimum = "+str(min_individual.get_function_result())+"\n")
+    file.write("Current Maximum = "+str(max_individual.get_function_result())+"\n")
     file.write("\n\n\n")
 
 if __name__ == "__main__":
