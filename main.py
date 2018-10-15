@@ -1,5 +1,7 @@
 import random
 from texttable import Texttable
+from operator import attrgetter
+
 
 class Individual:
   def __init__(self, number):
@@ -62,7 +64,7 @@ class Individual:
 
 class GeneticAlgorithm:
   def __init__(self):
-    self.NUMBER_OF_GENERATIONS = 20
+    self.NUMBER_OF_GENERATIONS = 2000
     self.run()
 
   def run(self):
@@ -76,7 +78,7 @@ class GeneticAlgorithm:
       while first_sample == second_sample:
         second_sample = self.run_tournament()
       self.run_crossover(first_sample,second_sample)
-      self.run_mutation([first_sample,second_sample])
+      self.run_mutation(2)
       self.normalize()
       self.print_table(current_generation, file)
       current_generation += 1
@@ -104,35 +106,50 @@ class GeneticAlgorithm:
   
   #Get two random individuals and see which one has the greater probability
   def run_tournament(self):
-    sample1, sample2 = random.sample(self.individuals, 2)
-    if sample1.get_probability() > sample2.get_probability():
-      return sample1
-    return sample2
+    samples = random.sample(self.individuals, 2)      
+    max_value = 0
+    max_sample = None
+    for sample in samples:
+      if sample.get_probability() > max_value:
+        max_value = sample.get_probability()
+        max_sample = sample
+    return max_sample
+  
   
   #Make the crossover between two individulas
   def run_crossover(self, individual1, individual2):
+    #return response in bits
     response = individual1 + individual2
     if response == None:
       return
     else:
       first_son, second_son = response
-      individual1_index = self.individuals.index(individual1)
-      individual2_index = self.individuals.index(individual2)
-      self.individuals[individual1_index].set_individual_in_bits(first_son)
-      self.individuals[individual2_index].set_individual_in_bits(second_son)
+      self.delete_worsts(2)
+      first_son_integer = int(first_son[1:5], 2)
+      second_son_integer = int(second_son[1:5], 2)
+      if first_son[0] == "1":
+        first_son_integer *= -1
+      if second_son[0] == "1":
+        second_son_integer *= -1
+      self.individuals.append(Individual(first_son_integer))
+      self.individuals.append(Individual(second_son_integer))
   
-  def run_mutation(self, samples):
-    for individual in samples:
-      individual_bits = individual.get_individual_in_bits()
+  def run_mutation(self, number):
+    for individual_index in range(1,number+1):
+      individual_bits = self.individuals[individual_index*-1].get_individual_in_bits()
       bits_after_mutation = ""
       for bit in individual_bits:
         if random.random() < 0.01:
           bits_after_mutation += "0" if bit == "1" else "1"
         else:
           bits_after_mutation += bit
-      individual_index = self.individuals.index(individual)
       self.individuals[individual_index].set_individual_in_bits(bits_after_mutation)
   
+  def delete_worsts(self, number):
+    for i in range(number):
+      min_individual = min(self.individuals,key=attrgetter('function_result'))
+      self.individuals.remove(min_individual)
+    
   def normalize(self):
     for individual in self.individuals:
       individual_bits = individual.get_individual_in_bits()
