@@ -62,7 +62,7 @@ class Individual:
 
 class GeneticAlgorithm:
   def __init__(self):
-    self.NUMBER_OF_GENERATIONS = 20
+    self.NUMBER_OF_GENERATIONS = 200
     self.run()
 
   def run(self):
@@ -76,7 +76,7 @@ class GeneticAlgorithm:
       while first_sample == second_sample:
         second_sample = self.run_tournament()
       self.run_crossover(first_sample,second_sample)
-      self.run_mutation()
+      self.run_mutation([first_sample,second_sample])
       self.normalize()
       self.print_table(current_generation, file)
       current_generation += 1
@@ -120,8 +120,8 @@ class GeneticAlgorithm:
       self.individuals[individual1_index].set_individual_in_bits(first_son)
       self.individuals[individual2_index].set_individual_in_bits(second_son)
   
-  def run_mutation(self):
-    for individual in self.individuals:
+  def run_mutation(self, samples):
+    for individual in samples:
       individual_bits = individual.get_individual_in_bits()
       bits_after_mutation = ""
       for bit in individual_bits:
@@ -129,7 +129,8 @@ class GeneticAlgorithm:
           bits_after_mutation += "0" if bit == "1" else "1"
         else:
           bits_after_mutation += bit
-      individual.set_individual_in_bits(bits_after_mutation)
+      individual_index = self.individuals.index(individual)
+      self.individuals[individual_index].set_individual_in_bits(bits_after_mutation)
   
   def normalize(self):
     for individual in self.individuals:
