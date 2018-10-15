@@ -64,7 +64,7 @@ class Individual:
 
 class GeneticAlgorithm:
   def __init__(self):
-    self.NUMBER_OF_GENERATIONS = 2000
+    self.NUMBER_OF_GENERATIONS = 20
     self.run()
 
   def run(self):
@@ -77,8 +77,8 @@ class GeneticAlgorithm:
       second_sample = self.run_tournament()
       while first_sample == second_sample:
         second_sample = self.run_tournament()
-      self.run_crossover(first_sample,second_sample)
-      self.run_mutation(2)
+      if self.run_crossover(first_sample,second_sample):
+        self.run_mutation(2)
       self.normalize()
       self.print_table(current_generation, file)
       current_generation += 1
@@ -121,7 +121,7 @@ class GeneticAlgorithm:
     #return response in bits
     response = individual1 + individual2
     if response == None:
-      return
+      return False
     else:
       first_son, second_son = response
       self.delete_worsts(2)
@@ -133,6 +133,8 @@ class GeneticAlgorithm:
         second_son_integer *= -1
       self.individuals.append(Individual(first_son_integer))
       self.individuals.append(Individual(second_son_integer))
+      return True
+
   
   def run_mutation(self, number):
     for individual_index in range(1,number+1):
