@@ -68,6 +68,7 @@ class GeneticAlgorithm:
   def run(self):
     self.individuals = self.generate_initial_population()
     current_generation = 0
+    file = open("table_result", "w")
     while current_generation < self.NUMBER_OF_GENERATIONS:
       self.set_probabilities()
       first_sample = self.run_tournament()
@@ -77,8 +78,9 @@ class GeneticAlgorithm:
       self.run_crossover(first_sample,second_sample)
       self.run_mutation()
       self.normalize()
-      self.print_table(current_generation)
+      self.print_table(current_generation, file)
       current_generation += 1
+    file.close()
 
   #Generate initial population with 30 individuals between -10 and 10
   def generate_initial_population(self):
@@ -144,15 +146,16 @@ class GeneticAlgorithm:
       individual.set_individual_in_bits(individual_bits)
       individual.set_probability(0)
   
-  def print_table(self, generation):
-    print("Current generation: "+str(generation) )
+  def print_table(self, generation,file):
+    file.write("Current generation: "+str(generation)+"\n" )
     table_rows = []
     table = Texttable()
     table_rows.append(['#', 'X', 'X in binary', 'f(x)'])
     for index, individual in enumerate(self.individuals):
       table_rows.append([index, individual.get_decimal_number(), "0b"+individual.get_individual_in_bits(), individual.get_function_result()])
     table.add_rows(table_rows)
-    print(table.draw())
+    file.write(table.draw())
+    file.write("\n\n\n")
 
 if __name__ == "__main__":
   GeneticAlgorithm()
