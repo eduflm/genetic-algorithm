@@ -64,7 +64,10 @@ class Individual:
 
 class GeneticAlgorithm:
   def __init__(self):
-    self.NUMBER_OF_GENERATIONS = 20
+    self.NUMBER_OF_GENERATIONS = 50
+    self.POPULATION_LENGTH = 30
+    self.MINIMUM_VALUE = -10
+    self.MAXIMUM_VALUE = 10
     self.run()
 
   def run(self):
@@ -85,12 +88,12 @@ class GeneticAlgorithm:
     print("File table_result generated with success!")
     file.close()
 
-  #Generate initial population with 30 individuals between -10 and 10
+  #Generate initial population with POPULATION_LENGTH individuals between -10 and 10
   def generate_initial_population(self):
     #List of individuals objects
     individuals_list = []
-    while (len(individuals_list) < 30):
-      randomNumber = random.randrange(-10,10)
+    while (len(individuals_list) < self.POPULATION_LENGTH):
+      randomNumber = random.randrange(self.MINIMUM_VALUE,self.MAXIMUM_VALUE)
       individuals_list.append(Individual(randomNumber))
     return individuals_list
 
